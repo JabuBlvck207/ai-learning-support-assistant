@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An AI learning assistant for summaries, explanations, practice quizzes, and revision planning.">
+  <title>StudyMate AI | Learning Support Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="StudyMate AI home"><span class="brand-mark">S</span><span>StudyMate <b>AI</b></span></a>
+    <div class="topbar-right"><span class="status-dot"></span><span>Personal study space</span></div>
+  </header>
+
+  <main class="layout">
+    <section class="hero">
+      <div class="eyebrow">YOUR AI STUDY PARTNER</div>
+      <h1>Understand more.<br><span>Study with confidence.</span></h1>
+      <p>Upload your course notes and turn them into clear explanations, useful practice, and a focused revision plan.</p>
+      <div class="hero-tags"><span>Learn at your level</span><span>Practice actively</span><span>Revise with purpose</span></div>
+    </section>
+
+    <section class="workspace">
+      <aside class="sidebar">
+        <div class="panel upload-panel">
+          <div class="panel-heading"><div class="icon-box">↑</div><div><h2>Your study material</h2><p>Start by uploading your notes</p></div></div>
+          <form id="upload-form">
+            <label class="dropzone" for="document">
+              <span class="upload-icon">⇧</span>
+              <strong>Choose a PDF file</strong>
+              <small>Lecture notes or study guides · max 12 MB</small>
+              <input id="document" name="document" type="file" accept=".pdf,application/pdf" required>
+            </label>
+            <button class="button button-primary full" id="upload-button" type="submit">Upload notes</button>
+          </form>
+          <div id="document-status" class="document-status muted" aria-live="polite">No document uploaded yet.</div>
+          <div id="document-preview" class="document-preview hidden"></div>
+        </div>
+
+        <div class="panel level-panel">
+          <h2>Learning level</h2>
+          <p>Choose how detailed explanations should be.</p>
+          <div class="level-switch" role="group" aria-label="Learning level">
+            <button type="button" class="level-option active" data-level="Beginner">Beginner</button>
+            <button type="button" class="level-option" data-level="Intermediate">Intermediate</button>
+          </div>
+        </div>
+
+        <div class="panel progress-panel">
+          <div class="progress-heading"><h2>Session progress</h2><span class="progress-count" id="activity-count">0</span></div>
+          <div class="progress-track"><div id="progress-bar" class="progress-fill"></div></div>
+          <p id="progress-caption">Complete a learning activity to get started.</p>
+          <div class="stats-row">
+            <div><strong id="summary-count">0</strong><span>Activities</span></div>
+            <div><strong id="quiz-score">—</strong><span>Latest score</span></div>
+          </div>
+          <label class="score-label" for="score-input">Record quiz score (%)</label>
+          <div class="score-entry"><input id="score-input" type="number" min="0" max="100" placeholder="e.g. 70"><button id="save-score" class="button button-small" type="button">Save</button></div>
+          <button id="reset-progress" class="text-button" type="button">Reset session progress</button>
+        </div>
+        <div class="privacy-note"><span>◇</span><p><b>Your learning, your control.</b><br>Files are processed for this request and are not saved by this prototype. Avoid uploading sensitive information.</p></div>
+      </aside>
+
+      <section class="main-panel">
+        <div class="main-panel-header">
+          <div><div class="eyebrow">LEARNING WORKSPACE</div><h2>What would you like to do?</h2><p>Select a tool to get started with your material.</p></div>
+          <div class="sparkle">✳</div>
+        </div>
+        <div class="tool-grid">
+          <button class="tool-card selected" data-task="summary" type="button"><span class="tool-icon purple">▤</span><span class="tool-title">Study summary</span><span class="tool-description">Turn long notes into key ideas and terms.</span><span class="tool-link">Create summary <b>↗</b></span></button>
+          <button class="tool-card" data-task="explain" type="button"><span class="tool-icon blue">◉</span><span class="tool-title">Explain a topic</span><span class="tool-description">Break down a difficult concept step by step.</span><span class="tool-link">Explore a topic <b>↗</b></span></button>
+          <button class="tool-card" data-task="quiz" type="button"><span class="tool-icon orange">✓</span><span class="tool-title">Practice quiz</span><span class="tool-description">Test your understanding with practice questions.</span><span class="tool-link">Practise now <b>↗</b></span></button>
+          <button class="tool-card" data-task="revision" type="button"><span class="tool-icon green">◎</span><span class="tool-title">Revision plan</span><span class="tool-description">Turn your results into a focused study plan.</span><span class="tool-link">Plan revision <b>↗</b></span></button>
+        </div>
+
+        <form id="task-form" class="task-form">
+          <div id="task-fields"></div>
+          <button id="run-button" class="button button-primary run-button" type="submit"><span id="run-label">Generate my summary</span><span>→</span></button>
+          <p class="form-hint">AI-generated content can contain errors. Check key facts against your course material.</p>
+        </form>
+
+        <section id="result-section" class="result-section hidden" aria-live="polite">
+          <div class="result-header"><div><div class="eyebrow">YOUR LEARNING RESULT</div><h2 id="result-title">Study summary</h2></div><button id="copy-result" class="button button-secondary" type="button">Copy result</button></div>
+          <div id="result-content" class="result-content"></div>
+          <div class="result-actions"><button id="complete-activity" class="button button-primary" type="button">Mark activity complete</button><span id="completion-status"></span></div>
+        </section>
+
+        <section class="ask-panel">
+          <div class="ask-heading"><span class="ask-icon">?</span><div><h3>Have a question about your notes?</h3><p>Ask a question and get an explanation grounded in your uploaded material.</p></div></div>
+          <form id="ask-form" class="ask-form"><input id="question-input" type="text" placeholder="e.g. Explain the difference between AI and machine learning..." required><button class="button button-secondary" type="submit">Ask AI <span>→</span></button></form>
+          <div id="ask-result" class="ask-result hidden" aria-live="polite"></div>
+        </section>
+        <footer>Built for learning, not replacing it. <span>StudyMate AI · Prototype</span></footer>
+      </section>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
